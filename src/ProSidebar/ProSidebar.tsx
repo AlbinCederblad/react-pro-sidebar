@@ -10,6 +10,7 @@ export interface Props {
   className?: string;
   children?: React.ReactNode;
   breakPoint?: 'xl' | 'lg' | 'md' | 'sm' | 'xs';
+  available?: Array<string>,
   onToggle?: (value: boolean) => void;
 }
 
@@ -17,22 +18,25 @@ export interface SidebarContextProps {
   collapsed: boolean;
   rtl: boolean;
   toggled: boolean;
+  available: Array<string>;
 }
 
 export const SidebarContext = createContext<SidebarContextProps>({
   collapsed: false,
   rtl: false,
   toggled: false,
+  available: [],
 });
 
 const ProSidebar: React.ForwardRefRenderFunction<unknown, Props> = (
-  { children, className, width, collapsed, rtl, toggled, image, breakPoint, onToggle, ...rest },
+  { children, className, width, collapsed, rtl, toggled, image, breakPoint, onToggle, available, ...rest },
   ref,
 ) => {
   const [sidebarState, setSidebarState] = useState({
     collapsed: typeof collapsed === 'undefined' ? false : collapsed,
     rtl: typeof rtl === 'undefined' ? false : rtl,
     toggled: typeof toggled === 'undefined' ? false : toggled,
+    available: typeof available === 'undefined' ? [] : available,
   });
 
   const sidebarRef: React.RefObject<HTMLDivElement> =

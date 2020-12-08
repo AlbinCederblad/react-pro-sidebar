@@ -16,6 +16,7 @@ export interface Props {
   suffix?: React.ReactNode;
   firstchild?: boolean;
   popperarrow?: boolean;
+  id?: string;
 }
 
 const SubMenu: React.ForwardRefRenderFunction<unknown, Props> = (
@@ -30,12 +31,13 @@ const SubMenu: React.ForwardRefRenderFunction<unknown, Props> = (
     suffix,
     firstchild,
     popperarrow,
+    id,
     ...rest
   },
   ref,
 ) => {
   let popperInstance;
-  const { collapsed, rtl, toggled } = useContext(SidebarContext);
+  const { collapsed, rtl, toggled, available } = useContext(SidebarContext);
   const [closed, setClosed] = useState(!defaultOpen);
   const popperElRef = useRef(null);
   const referenceElement = useRef(null);
@@ -44,6 +46,12 @@ const SubMenu: React.ForwardRefRenderFunction<unknown, Props> = (
   const handleToggleSubMenu = () => {
     setClosed(!closed);
   };
+
+  function isVisible(): Boolean {
+    if (available.length === 0) return true;
+    if (available.includes(id)) return true;
+    return false;
+  }
 
   useEffect(() => {
     if (firstchild) {
@@ -92,7 +100,7 @@ const SubMenu: React.ForwardRefRenderFunction<unknown, Props> = (
 
   const subMenuRef: LegacyRef<HTMLLIElement> = (ref as any) || React.createRef<HTMLLIElement>();
 
-  return (
+  const visibleSubMenu = (
     <li
       ref={subMenuRef}
       className={classNames('pro-menu-item pro-sub-menu', className, {
@@ -124,7 +132,9 @@ const SubMenu: React.ForwardRefRenderFunction<unknown, Props> = (
       {firstchild && collapsed ? (
         <div
           ref={popperElement}
-          className={classNames('pro-inner-list-item popper-element', { 'has-arrow': popperarrow })}
+          className={classNames('pro-inner-list-item popper-element', {
+            'has-arrow': popperarrow,
+          })}
         >
           <div className="popper-inner" ref={popperElRef}>
             <ul>{children}</ul>
@@ -143,6 +153,12 @@ const SubMenu: React.ForwardRefRenderFunction<unknown, Props> = (
       )}
     </li>
   );
+
+  if (isVisible()) {
+    return visibleSubMenu;
+  } 
+  return <></>;
+  
 };
 
 export default forwardRef<unknown, Props>(SubMenu);
